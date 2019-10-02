@@ -20,6 +20,7 @@ public class TestRestController {
     @Autowired
     private RoleRepository roleRepository;
 
+    //TODO
     @PostMapping("/register")
     public User register(@RequestBody User user) throws RoleNotFoundException {
         List<Role> roles = user.getRoles();
