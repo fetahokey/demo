@@ -58,6 +58,10 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
                 .build()
                 .verify(token)
                 .getSubject();
+
+
+
+
             // search in th database if we found the user by token subject (username)
             // then grab user details and create spring auth token using username , pass, roles
             if(userName != null){
@@ -72,4 +76,6 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
         }
         return null;
     }
+
+
 }

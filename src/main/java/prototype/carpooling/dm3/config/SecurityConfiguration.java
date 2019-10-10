@@ -1,7 +1,9 @@
 package prototype.carpooling.dm3.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -18,6 +20,7 @@ import prototype.carpooling.dm3.security.JwtAuthenticationFilter;
 import prototype.carpooling.dm3.security.JwtAuthorizationFilter;
 import prototype.carpooling.dm3.service.CustomUserDetailsService;
 
+@Profile("Auth0")
 @Configuration
 @EnableWebSecurity
 @EnableJpaRepositories(basePackageClasses = UserRepository.class)
@@ -48,22 +51,27 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //                .anyRequest().hasRole("ADMIN")
 //                .and()
 //                .formLogin().permitAll();
+        JwtAuthenticationFilter authenticationFilter = new JwtAuthenticationFilter(authenticationManager());
+        authenticationFilter.setFilterProcessesUrl("/api/authenticate");
         http
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             // add JWT filters (1. authentication, 2. authorization)
-            .addFilter(new JwtAuthenticationFilter(authenticationManager()))
+            .addFilter(authenticationFilter)
             .addFilter(new JwtAuthorizationFilter(authenticationManager(), userRepository))
             .authorizeRequests()
             // configure access rules
             .antMatchers(HttpMethod.POST, "/login").permitAll()
-            .antMatchers("/home", "/register").permitAll()
+            .antMatchers(HttpMethod.POST, "/api/test").permitAll()
+            .antMatchers("/home", "/register","/api/authenticate").permitAll()
             //.antMatchers("/manger").hasRole("MANAGER")
             //.antMatchers("/secured").hasRole("ADMIN")
-            .anyRequest().authenticated();
-
+            .anyRequest().authenticated()
+        ;
     }
+
+
 
     private PasswordEncoder getPasswordEncoder() {
         return new PasswordEncoder() {

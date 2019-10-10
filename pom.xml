@@ -68,6 +68,13 @@
             <artifactId>java-jwt</artifactId>
             <version>3.4.1</version>
         </dependency>
+
+        <!--For working with json web tokens-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.9.0</version>
+        </dependency>
     </dependencies>
 
     <build>

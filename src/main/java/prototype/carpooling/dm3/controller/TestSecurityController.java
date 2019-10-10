@@ -10,7 +10,7 @@ public class TestSecurityController {
 
     @GetMapping("/home")
     public String publicApi(){
-        return "This is public API {This is home page}";
+        return "This is public API || {This is home page}";
     }
 
     @GetMapping("/secured")
