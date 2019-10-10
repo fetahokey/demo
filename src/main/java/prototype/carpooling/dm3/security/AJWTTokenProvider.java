@@ -2,6 +2,8 @@ package prototype.carpooling.dm3.security;
 
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 import prototype.carpooling.dm3.model.CustomUserDetail;
@@ -12,22 +14,23 @@ import java.util.Date;
 @Slf4j
 public class AJWTTokenProvider {
 
-    // later set those values on .properties
-    private String JWTSecret = "MyJWTSuperSecretKey";
-    private int JWTExpirationInMS = 888800000;
+    @Value("${app.jwt.secret}")
+    private String secret ;
+    @Value("${app.jwt.expirationInMs}")
+    private int expirationInMS;
 
     //Token generation
     public String generateToken(Authentication authentication){
 
         CustomUserDetail userPrincipal = (CustomUserDetail) authentication.getPrincipal();
 
-        Date expirationDate = new Date(new Date().getTime() + JWTExpirationInMS);
+        Date expirationDate = new Date(new Date().getTime() + expirationInMS);
 
         return Jwts.builder()
                    .setSubject(userPrincipal.getUsername())
                    .setIssuedAt(new Date())
                    .setExpiration(expirationDate)
-                   .signWith(SignatureAlgorithm.HS512, JWTSecret)
+                   .signWith(SignatureAlgorithm.HS512, secret)
                    .compact();
 
     }
@@ -35,17 +38,15 @@ public class AJWTTokenProvider {
     // Retrieve the subject from JWT
     public String getUsernameFromJWT(String token){
         return Jwts.parser()
-                            .setSigningKey(JWTSecret)
+                            .setSigningKey(secret)
                             .parseClaimsJws(token)
                             .getBody().getSubject();
     }
 
     // validate token
     public  boolean validateToken(String token){
-        log.info("validateToken() token is:["+token+"]");
-        log.info("validateToken() jwtSecret is:["+JWTSecret+"]");
         try {
-            Jwts.parser().setSigningKey(JWTSecret).parseClaimsJws(token);
+            Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
             return true;
         }catch (SignatureException e){
             log.error("Invalid JWT signature");

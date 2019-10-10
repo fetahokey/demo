@@ -2,6 +2,7 @@ package prototype.carpooling.dm3.security;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +29,12 @@ public class AJWTAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
 
+    @Value("${app.jwt.header}")
+    private String HEADER_STRING;
+
+    @Value("${app.jwt.tokenPrefix}")
+    private  String TOKEN_TYPE;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request,  HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
@@ -51,8 +58,8 @@ public class AJWTAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getJWTFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+        String bearerToken = request.getHeader(HEADER_STRING);
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(TOKEN_TYPE)) {
 
             return bearerToken.substring(7, bearerToken.length());
         }

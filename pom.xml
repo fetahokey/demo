@@ -75,6 +75,12 @@
             <artifactId>jjwt</artifactId>
             <version>0.9.0</version>
         </dependency>
+    <!--Generating Your Own Metadata by Using the Annotation Processor-->
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-configuration-processor</artifactId>-->
+<!--            <optional>true</optional>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>
